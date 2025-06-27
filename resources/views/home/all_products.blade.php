@@ -135,8 +135,8 @@
                         <div class="box" style="margin-bottom: 30px;">
                            <div class="option_container">
                               <div class="options">
-                                 <a href="" class="option1">
-                                    {{ Str::limit($products->title, 20) }}
+                                 <a href="{{url('/product_details',$products->id)}}" class="option1">
+                                    Product Details
                                  </a>
                                  <a href="" class="option2">
                                     Buy Now
@@ -156,10 +156,10 @@
                               <h5 title="{{ $products->title }}">
                                  {{ Str::limit($products->title, 25) }}
                               </h5>
-                              <p style="font-size: 12px; color: #666; margin: 5px 0;">
+                              <!-- <p style="font-size: 12px; color: #666; margin: 5px 0;">
                                  {{ Str::limit($products->description, 60) }}
-                              </p>
-                              <h6>
+                              </p> -->
+                              <h6 style="margin: 0 10px">
                                  @if($products->discount && $products->discount > 0)
                                     <span style="text-decoration: line-through; color: #999; margin-right: 10px; font-size: 14px;">
                                        ${{ number_format($products->price, 2) }}
@@ -180,11 +180,11 @@
                                  @else
                                     <small style="color: #e74c3c; font-weight: bold;">Out of Stock</small>
                                  @endif
-                                 <small style="background-color: #3498db; color: white; padding: 3px 8px; border-radius: 12px; font-size: 10px;">
+                                 <!-- <small style="background-color: #3498db; color: white; padding: 3px 8px; border-radius: 12px; font-size: 10px;">
                                     {{ $products->category }}
-                                 </small>
+                                 </small> -->
                               </div>
-                              <div style="margin-top: 15px; text-align: center;">
+                              <!-- <div style="margin-top: 15px; text-align: center;">
                                  <a href="{{ url('product_details', $products->id) }}" 
                                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                                            color: white; 
@@ -196,7 +196,7 @@
                                            transition: all 0.3s ease;">
                                     Product Details
                                  </a>
-                              </div>
+                              </div> -->
                            </div>
                         </div>
                      </div>

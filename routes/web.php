@@ -55,3 +55,11 @@ Route::post('/remove_from_cart', [HomeController::class, 'remove_from_cart']);
 Route::post('/update_cart', [HomeController::class, 'update_cart']);
 
 Route::get('/get_cart_count', [HomeController::class, 'get_cart_count']);
+
+Route::get('/checkout', [HomeController::class, 'checkout']);
+
+Route::post('/process_payment', [HomeController::class, 'process_payment']);
+
+Route::get('/payment_success', [HomeController::class, 'payment_success']);
+
+Route::get('/payment_failed', [HomeController::class, 'payment_failed']);

@@ -97,11 +97,8 @@
       </style>
    </head>
    <body>
-      <div class="hero_area">
-         <!-- header section strats -->
          @include('home.header')
-         <!-- end header section -->
-      </div>
+       
       
       <!-- cart section -->
       <section class="cart_section layout_padding">
@@ -220,9 +217,9 @@
                            <strong>Total:</strong>
                            <strong class="total-price" id="grand-total">${{ number_format($grandTotal, 2) }}</strong>
                         </div>
-                        <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20px;">
+                        <a href="{{ url('checkout') }}" class="btn btn-primary btn-lg btn-block" style="margin-top: 20px;">
                            <i class="fa fa-credit-card"></i> Proceed to Checkout
-                        </button>
+                        </a>
                      </div>
                   </div>
                </div>

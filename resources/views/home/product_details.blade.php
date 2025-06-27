@@ -120,9 +120,9 @@
       </style>
    </head>
    <body>
-      <div class="hero_area" style="margin-bottom: none; ">
-         @include('home.header')
-      </div>
+      
+      @include('home.header')
+      
       
       <!-- product details section -->
       <section class="product_section layout_padding">
