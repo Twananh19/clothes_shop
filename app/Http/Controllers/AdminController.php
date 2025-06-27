@@ -111,4 +111,87 @@ class AdminController extends Controller
         $products = Product::all();
         return view('admin.show_product', compact('products'));
     }
+
+    public function delete_product($id)
+    {
+        try {
+            $product = Product::find($id);
+            if ($product) {
+                // Delete image file if exists
+                if ($product->image && file_exists(public_path('product_images/' . $product->image))) {
+                    unlink(public_path('product_images/' . $product->image));
+                }
+                
+                $product->delete();
+                return redirect()->back()->with('message', 'Product Deleted Successfully');
+            }
+            return redirect()->back()->with('error', 'Product not found');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error deleting product: ' . $e->getMessage());
+        }
+    }
+
+    public function update_product($id)
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return redirect('show_product')->with('error', 'Product not found');
+        }
+        
+        $categories = Category::all();
+        return view('admin.update_product', compact('product', 'categories'));
+    }
+
+    public function edit_product(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric',
+                'quantity' => 'required|integer',
+                'category' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'discount' => 'nullable|numeric'
+            ]);
+
+            $product = Product::find($id);
+            if (!$product) {
+                return redirect()->back()->with('error', 'Product not found');
+            }
+
+            $product->title = $request->title;
+            $product->description = $request->description;
+            $product->price = $request->price;
+            $product->quantity = $request->quantity;
+            $product->category = $request->category;
+            $product->discount = $request->discount ?? 0;
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($product->image && file_exists(public_path('product_images/' . $product->image))) {
+                    unlink(public_path('product_images/' . $product->image));
+                }
+                
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('product_images'), $imageName);
+                $product->image = $imageName;
+            }
+
+            $saved = $product->save();
+            
+            if ($saved) {
+                return redirect('show_product')->with('message', 'Product Updated Successfully');
+            } else {
+                return redirect()->back()->with('error', 'Failed to update product');
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
 }

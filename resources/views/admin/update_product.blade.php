@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+
+    <base href="/public">
     @include('admin.css')
     <style type="text/css">
         .div_center {
@@ -82,7 +84,7 @@
         }
 
         .submit_btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             padding: 14px 32px;
             border: none;
@@ -96,7 +98,26 @@
 
         .submit_btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .cancel_btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .cancel_btn:hover {
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -188,26 +209,36 @@
                                 </div>
                             @endif
 
-                            <h2 class="font_size">Product Management</h2>
+                            <h2 class="font_size">Update Product</h2>
 
-                            <!-- Product Form -->
+                            <!-- Product Update Form -->
                             <div class="form_container">
-                                <form action="{{ url('add_product') }}" method="POST" enctype="multipart/form-data">
+                                <form action="{{ url('edit_product', $product->id) }}" method="POST" enctype="multipart/form-data">
                                     @csrf
+                                    @method('PUT')
                                     <div class="form_grid">
                                         <div class="form_group">
                                             <label class="form_label">Product Title</label>
-                                            <input type="text" name="title" class="form_input" placeholder="Enter product title" value="{{ old('title') }}" required>
+                                            <input type="text" name="title" class="form_input" placeholder="Enter product title" value="{{ old('title', $product->title) }}" required>
+                                            @error('title')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group">
                                             <label class="form_label">Price ($)</label>
-                                            <input type="number" name="price" class="form_input" placeholder="0.00" step="0.01" min="0" value="{{ old('price') }}" required>
+                                            <input type="number" name="price" class="form_input" placeholder="0.00" step="0.01" min="0" value="{{ old('price', $product->price) }}" required>
+                                            @error('price')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group">
                                             <label class="form_label">Quantity</label>
-                                            <input type="number" name="quantity" class="form_input" placeholder="0" min="0" value="{{ old('quantity') }}" required>
+                                            <input type="number" name="quantity" class="form_input" placeholder="0" min="0" value="{{ old('quantity', $product->quantity) }}" required>
+                                            @error('quantity')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group">
@@ -215,40 +246,57 @@
                                             <select name="category" class="form_select" required>
                                                 <option value="">Select Category</option>
                                                 @foreach($categories as $category)
-                                                    <option value="{{ $category->category_name }}" {{ old('category') == $category->category_name ? 'selected' : '' }}>
+                                                    <option value="{{ $category->category_name }}" {{ old('category', $product->category) == $category->category_name ? 'selected' : '' }}>
                                                         {{ $category->category_name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @error('category')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group">
                                             <label class="form_label">Discount (%)</label>
-                                            <input type="number" name="discount" class="form_input" placeholder="0" step="0.01" min="0" max="100" value="{{ old('discount') }}">
+                                            <input type="number" name="discount" class="form_input" placeholder="0" step="0.01" min="0" max="100" value="{{ old('discount', $product->discount) }}">
+                                            @error('discount')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group">
-                                            <label class="form_label">Product Image</label>
+                                            <label class="form_label">Product Image (optional)</label>
                                             <input type="file" name="image" class="form_input" accept="image/*">
+                                            <small style="color: #6b7280; font-size: 12px;">Leave empty to keep current image</small>
+                                            @error('image')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
 
                                         <div class="form_group form_group_full">
                                             <label class="form_label">Product Description</label>
-                                            <textarea name="description" class="form_input form_textarea" placeholder="Enter product description" required>{{ old('description') }}</textarea>
+                                            <textarea name="description" class="form_input form_textarea" placeholder="Enter product description" required>{{ old('description', $product->description) }}</textarea>
+                                            @error('description')
+                                                <span class="text-red-500 text-sm mt-1">{{ $message }}</span>
+                                            @enderror
                                         </div>
+
+                                        @if($product->image)
+                                            <div class="form_group form_group_full">
+                                                <label class="form_label">Current Product Image</label>
+                                                <div style="text-align: center; margin-top: 10px;">
+                                                    <img src="/product_images/{{ $product->image }}" alt="Current Product Image" style="max-width: 200px; max-height: 200px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); border: 3px solid #e5e7eb;">
+                                                    <p style="color: #6b7280; font-size: 12px; margin-top: 5px; font-style: italic;">Current: {{ $product->image }}</p>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
 
-                                    <button type="submit" class="submit_btn">
-                                        Add Product
-                                    </button>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px;">
+                                        <a href="{{ url('show_product') }}" class="cancel_btn">Cancel</a>
+                                        <button type="submit" class="submit_btn">Update Product</button>
+                                    </div>
                                 </form>
-
-                                <!-- Test Button -->
-                                <!-- <div style="margin-top: 20px; text-align: center;">
-                                    <a href="{{ url('test_add_product') }}" class="submit_btn" style="display: inline-block; text-decoration: none; width: auto; padding: 10px 20px;">
-                                        Test Add Product
-                                    </a>
-                                </div> -->
                             </div>
                         </div>
                         <!-- Content Area End -->

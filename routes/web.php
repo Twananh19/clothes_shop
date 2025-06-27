@@ -34,4 +34,14 @@ Route::post('/add_product', [AdminController::class, 'add_product']);
 
 Route::get('/test_add_product', [AdminController::class, 'test_add_product']);
 
-Route::get('/show_product', [HomeController::class, 'show_product']);
+Route::get('/show_product', [AdminController::class, 'show_product']);
+
+Route::get('/update_product/{id}', [AdminController::class, 'update_product']);
+
+Route::put('/edit_product/{id}', [AdminController::class, 'edit_product']);
+
+Route::get('/delete_product/{id}', [AdminController::class, 'delete_product']);
+
+Route::get('/all_products', [HomeController::class, 'all_products']);
+
+Route::get('/product_details/{id}', [HomeController::class, 'product_details']);
