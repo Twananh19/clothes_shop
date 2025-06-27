@@ -63,3 +63,12 @@ Route::post('/process_payment', [HomeController::class, 'process_payment']);
 Route::get('/payment_success', [HomeController::class, 'payment_success']);
 
 Route::get('/payment_failed', [HomeController::class, 'payment_failed']);
+
+// Admin order management routes
+Route::get('/admin/orders', [AdminController::class, 'view_orders']);
+
+Route::get('/admin/order-details/{id}', [AdminController::class, 'order_details']);
+
+Route::post('/admin/ajax-update-order-status', [AdminController::class, 'ajax_update_order_status']);
+
+Route::post('/admin/ajax-delete-order', [AdminController::class, 'ajax_delete_order']);

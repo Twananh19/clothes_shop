@@ -188,6 +188,14 @@
                      
                      @if($product->quantity > 0)
                      <div class="product-actions mt-4">
+                        <!-- Alert area for messages -->
+                        <div id="alert-container" class="mb-3" style="display: none;">
+                           <div id="alert-message" class="alert alert-dismissible" role="alert">
+                              <span id="alert-text"></span>
+                              <button type="button" class="close" onclick="hideAlert()">&times;</button>
+                           </div>
+                        </div>
+                        
                         <div class="quantity-selector mb-3">
                            <label for="quantity">Quantity:</label>
                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $product->quantity }}" class="form-control" style="width: 100px; display: inline-block;">
@@ -316,15 +324,38 @@
                },
                success: function(response) {
                   if(response.success) {
-                     alert(response.message);
+                     showAlert(response.message, 'success');
                      // Cập nhật cart count trong header
                      $('#cart-count').text(response.cart_count).show();
+                  } else {
+                     // Hiển thị thông báo lỗi
+                     showAlert(response.message, 'danger');
                   }
                },
-               error: function() {
-                  alert('Error adding product to cart');
+               error: function(xhr) {
+                  if (xhr.responseJSON && xhr.responseJSON.message) {
+                     showAlert('Error: ' + xhr.responseJSON.message, 'danger');
+                  } else {
+                     showAlert('Error adding product to cart', 'danger');
+                  }
                }
             });
+         }
+
+         function showAlert(message, type) {
+            $('#alert-text').text(message);
+            $('#alert-message').removeClass('alert-success alert-danger alert-warning alert-info')
+                              .addClass('alert-' + type);
+            $('#alert-container').slideDown();
+            
+            // Auto hide after 5 seconds
+            setTimeout(function() {
+               hideAlert();
+            }, 5000);
+         }
+
+         function hideAlert() {
+            $('#alert-container').slideUp();
          }
 
          // Cập nhật cart count khi trang load

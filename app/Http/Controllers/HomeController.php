@@ -51,11 +51,28 @@ class HomeController extends Controller
         
         $product = Product::findOrFail($product_id);
         
+        // Kiểm tra số lượng có đủ không
+        if ($product->quantity < $quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not enough stock! Available: ' . $product->quantity,
+                'cart_count' => array_sum(array_column(session()->get('cart', []), 'quantity'))
+            ]);
+        }
+        
         // Lấy cart từ session
         $cart = session()->get('cart', []);
         
-        // Nếu sản phẩm đã có trong cart, cập nhật số lượng
+        // Nếu sản phẩm đã có trong cart, kiểm tra tổng số lượng
         if(isset($cart[$product_id])) {
+            $totalQuantity = $cart[$product_id]['quantity'] + $quantity;
+            if ($product->quantity < $totalQuantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not enough stock! You already have ' . $cart[$product_id]['quantity'] . ' in cart. Available: ' . $product->quantity,
+                    'cart_count' => array_sum(array_column($cart, 'quantity'))
+                ]);
+            }
             $cart[$product_id]['quantity'] += $quantity;
         } else {
             // Thêm sản phẩm mới vào cart
@@ -173,9 +190,20 @@ class HomeController extends Controller
             return redirect('/cart')->with('error', 'Your cart is empty!');
         }
 
-        // Tính tổng tiền
+        // Tính tổng tiền và kiểm tra số lượng có đủ không
         $grandTotal = 0;
-        foreach($cart as $details) {
+        foreach($cart as $productId => $details) {
+            // Kiểm tra sản phẩm còn tồn tại không
+            $product = Product::find($productId);
+            if (!$product) {
+                return redirect('/cart')->with('error', 'Product "' . $details['title'] . '" no longer exists.');
+            }
+            
+            // Kiểm tra số lượng có đủ không
+            if ($product->quantity < $details['quantity']) {
+                return redirect('/cart')->with('error', 'Not enough stock for "' . $product->title . '". Available: ' . $product->quantity . ', Requested: ' . $details['quantity']);
+            }
+            
             $price = $details['discount'] && $details['discount'] > 0 
                    ? $details['price'] * (1 - $details['discount'] / 100)
                    : $details['price'];
@@ -213,6 +241,17 @@ class HomeController extends Controller
                 'payment_status' => $paymentStatus,
                 'order_items' => $cart
             ]);
+
+            // Cập nhật số lượng sản phẩm trong database
+            foreach($cart as $productId => $details) {
+                $product = Product::find($productId);
+                if ($product) {
+                    $newQuantity = $product->quantity - $details['quantity'];
+                    // Đảm bảo số lượng không âm
+                    $product->quantity = max(0, $newQuantity);
+                    $product->save();
+                }
+            }
 
             // Xóa cart khỏi session sau khi thanh toán thành công
             session()->forget('cart');
