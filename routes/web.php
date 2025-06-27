@@ -45,3 +45,13 @@ Route::get('/delete_product/{id}', [AdminController::class, 'delete_product']);
 Route::get('/all_products', [HomeController::class, 'all_products']);
 
 Route::get('/product_details/{id}', [HomeController::class, 'product_details']);
+
+Route::post('/add_to_cart', [HomeController::class, 'add_to_cart']);
+
+Route::get('/cart', [HomeController::class, 'cart']);
+
+Route::post('/remove_from_cart', [HomeController::class, 'remove_from_cart']);
+
+Route::post('/update_cart', [HomeController::class, 'update_cart']);
+
+Route::get('/get_cart_count', [HomeController::class, 'get_cart_count']);

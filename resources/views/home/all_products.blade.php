@@ -184,6 +184,19 @@
                                     {{ $products->category }}
                                  </small>
                               </div>
+                              <div style="margin-top: 15px; text-align: center;">
+                                 <a href="{{ url('product_details', $products->id) }}" 
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                           color: white; 
+                                           padding: 8px 20px; 
+                                           text-decoration: none; 
+                                           border-radius: 20px; 
+                                           font-size: 12px; 
+                                           display: inline-block; 
+                                           transition: all 0.3s ease;">
+                                    Product Details
+                                 </a>
+                              </div>
                            </div>
                         </div>
                      </div>
